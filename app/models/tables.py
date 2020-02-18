@@ -1,5 +1,5 @@
 from app import db
-
+from app import login_manager
 
 
 class User(db.Model):
@@ -13,9 +13,17 @@ class User(db.Model):
 	password = db.Column(db.String)
 	role = db.Column(db.String)
 
+	def __init__(self, name, username, email, password, role):
+		self.name = name
+		self.username = username
+		self.email = email
+		self.password = password
+		self.role = role
+
 	@property
-	def is_autenticated(self):
+	def is_authenticated(self):
 		return True
+
 	@property
 	def is_active(self):
 		return True
@@ -27,13 +35,15 @@ class User(db.Model):
 	def get_id(self):
 		return str(self.id)
 
+	@login_manager.user_loader
+	def load_user(user_id):
+		try:
+			return User.query.get(user_id)
+		except:
+			return None
 
-	def __init__(self, name, username, email, password, role):
-		self.name = name
-		self.username = username
-		self.email = email
-		self.password = password
-		self.role = role
+
+
 
 	def __repr__(self):
 		return "<User %r>" % self.username
